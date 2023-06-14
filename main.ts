@@ -15,7 +15,6 @@ pins.setPull(pinC, PinPullMode.PullNone)
 pins.setPull(pinL, PinPullMode.PullNone)
 pins.setPull(pinR, PinPullMode.PullNone)
 
-//ARRAYconst pole: any = []
 radio.onReceivedNumber(function (receivedNumber: number) {
     if (receivedNumber === 5) {
         direction = false
@@ -45,7 +44,7 @@ basic.forever(function () {
             PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
             basic.pause(250)
-        } else {
+        } else if (!direction){
             //doleva
             PCAmotor.MotorRun(PCAmotor.Motors.M1, speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
