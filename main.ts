@@ -1,10 +1,9 @@
 radio.setGroup(13)
-let autoModeEnabled = true
 let whiteLine = 0
 
 let direction = false
 
-let speed = 130
+let speed = 125
 let turnSpeed = 90
 
 let pinC = DigitalPin.P15
@@ -18,15 +17,23 @@ pins.setPull(pinR, PinPullMode.PullNone)
 radio.onReceivedNumber(function (receivedNumber: number) {
     if (receivedNumber === 5) {
         direction = false
+        basic.showLeds(`
+        . . # . .
+        . # . . .
+        # # # # #
+        . # . . .
+        . . # . .
+        `)
     }
     if (receivedNumber === 10) {
         direction = true
-    }
-    if (receivedNumber === 1) {
-        autoModeEnabled = true
-    }
-    if (receivedNumber === 0) {
-        autoModeEnabled = false
+        basic.showLeds(`
+        . . # . .
+        . . . # .
+        # # # # #
+        . . . # .
+        . . # . .
+        `)
     }
 })
 
@@ -40,18 +47,18 @@ basic.forever(function () {
             //doprava
             PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, speed)
-            basic.pause(600)
+            basic.pause(500)
             PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
-            basic.pause(250)
+            basic.pause(200)
         } else if (!direction){
             //doleva
             PCAmotor.MotorRun(PCAmotor.Motors.M1, speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
-            basic.pause(600)
+            basic.pause(500)
             PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
             PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
-            basic.pause(250)
+            basic.pause(200)
         }
     } else if (r) {
         PCAmotor.MotorRun(PCAmotor.Motors.M1, -turnSpeed * 0.84)
