@@ -1,10 +1,16 @@
 radio.setGroup(13)
 let whiteLine = 0
 
+let pinShoot = DigitalPin.P2
+let pinEcho = DigitalPin.P1
+let directionC = false
+let directionR = false
+let directionL = false
+let speed = 150
+let turnSpeed = 100
 
-let direction = false
-let speed = 125
-let turnSpeed = 90
+let m1 = PCAmotor.Motors.M1
+let m4 = PCAmotor.Motors.M4
 
 let pinC = DigitalPin.P15
 let pinL = DigitalPin.P14 // zkontrolovat piny
@@ -16,7 +22,7 @@ pins.setPull(pinR, PinPullMode.PullNone)
 
 radio.onReceivedNumber(function (receivedNumber: number) {
     if (receivedNumber === 5) {
-        direction = false
+        directionL = true
         basic.showLeds(`
         . . # . .
         . # . . .
@@ -26,51 +32,99 @@ radio.onReceivedNumber(function (receivedNumber: number) {
         `)
     }
     if (receivedNumber === 10) {
-        direction = true
+        directionR = true
         basic.showLeds(`
         . . # . .
         . . . # .
         # # # # #
         . . . # .
         . . # . .
+        `)}
+        if (receivedNumber === 15) {
+            directionR = false
+            directionL = false
+            directionC = true
+            basic.showLeds(`
+        . . # . .
+        . # # # .
+        # . # . #
+        . . # . .
+        . . # . .
         `)
     }
 })
 
-basic.forever(function () { console.log(direction)
+basic.forever(function () { 
     let c = (whiteLine ^ pins.digitalReadPin(pinC)) == 0 ? false : true 
     let l = (whiteLine ^ pins.digitalReadPin(pinL)) == 0 ? false : true 
     let r = (whiteLine ^ pins.digitalReadPin(pinR)) == 0 ? false : true 
+    let obstacle = sonar.ping(pinShoot, pinEcho, PingUnit.Centimeters, 50)
+
+    if (obstacle < 15 && obstacle > 0) {
+        PCAmotor.MotorStopAll()
+        basic.pause(100)
+        music.playTone(Note.C, music.beat(BeatFraction.Whole))
+        PCAmotor.MotorRun(m1, -speed * 0.84)
+        PCAmotor.MotorRun(m4, speed)
+        basic.pause(1120)
+        PCAmotor.MotorStopAll()
+
+    }
 
     if (l && r) {
-        if (direction) {
-            //doprava
-            PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
-            PCAmotor.MotorRun(PCAmotor.Motors.M4, speed)
-            basic.pause(500)
-            PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
-            PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
+        if (directionC) {
+            PCAmotor.MotorRun(m1, -speed * 0.84)
+            PCAmotor.MotorRun(m4, -speed)
             basic.pause(200)
-        } else if (!direction){
+            directionC = false
+        } else if (directionL){
             //doleva
-            PCAmotor.MotorRun(PCAmotor.Motors.M1, speed * 0.84)
-            PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
+            PCAmotor.MotorRun(m1, speed * 0.84)
+            PCAmotor.MotorRun(m4, -speed)
             basic.pause(500)
-            PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
-            PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
+            PCAmotor.MotorRun(m1, -speed * 0.84)
+            PCAmotor.MotorRun(m4, -speed)
             basic.pause(200)
+            directionL = false
+            basic.showLeds(`
+        . . # . .
+        . # # # .
+        # . # . #
+        . . # . .
+        . . # . .
+        `)
+            directionC = true
         }
-    } else if (r) {
-        PCAmotor.MotorRun(PCAmotor.Motors.M1, -turnSpeed * 0.84)
-        PCAmotor.MotorRun(PCAmotor.Motors.M4, speed)
-        basic.pause(5)
+    } else if (directionR) {
+        //doprava
+        PCAmotor.MotorRun(m1, -speed * 0.84)
+        PCAmotor.MotorRun(m4, speed)
+        basic.pause(500)
+        PCAmotor.MotorRun(m1, -speed * 0.84)
+        PCAmotor.MotorRun(m4, -speed)
+        basic.pause(200)
+        directionR = false
+        basic.showLeds(`
+        . . # . .
+        . # # # .
+        # . # . #
+        . . # . .
+        . . # . .
+        `)
+        directionC = true
+    }
+    else if (r) {
+        PCAmotor.MotorRun(m1, -turnSpeed * 0.84)
+        PCAmotor.MotorRun(m4, speed)
+        basic.pause(3)
     } else if (l) {
-        PCAmotor.MotorRun(PCAmotor.Motors.M1, speed * 0.84)
-        PCAmotor.MotorRun(PCAmotor.Motors.M4, -turnSpeed)
-        basic.pause(5)
+        PCAmotor.MotorRun(m1, speed * 0.84)
+        PCAmotor.MotorRun(m4, -turnSpeed)
+        basic.pause(36)
     } else {
-        PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
-        PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
-        basic.pause(5)
+        PCAmotor.MotorRun(m1, -speed * 0.84)
+        PCAmotor.MotorRun(m4, -speed)
+        basic.pause(3)
     }  
+    
 })
