@@ -1,8 +1,8 @@
 radio.setGroup(13)
 let whiteLine = 0
 
-let direction = false
 
+let direction = false
 let speed = 125
 let turnSpeed = 90
 
@@ -37,10 +37,10 @@ radio.onReceivedNumber(function (receivedNumber: number) {
     }
 })
 
-basic.forever(function () {
-    let c = (whiteLine ^ pins.digitalReadPin(pinC)) == 0 ? false : true //1
-    let l = (whiteLine ^ pins.digitalReadPin(pinL)) == 0 ? false : true //2
-    let r = (whiteLine ^ pins.digitalReadPin(pinR)) == 0 ? false : true //3
+basic.forever(function () { console.log(direction)
+    let c = (whiteLine ^ pins.digitalReadPin(pinC)) == 0 ? false : true 
+    let l = (whiteLine ^ pins.digitalReadPin(pinL)) == 0 ? false : true 
+    let r = (whiteLine ^ pins.digitalReadPin(pinR)) == 0 ? false : true 
 
     if (l && r) {
         if (direction) {
@@ -63,11 +63,14 @@ basic.forever(function () {
     } else if (r) {
         PCAmotor.MotorRun(PCAmotor.Motors.M1, -turnSpeed * 0.84)
         PCAmotor.MotorRun(PCAmotor.Motors.M4, speed)
+        basic.pause(5)
     } else if (l) {
         PCAmotor.MotorRun(PCAmotor.Motors.M1, speed * 0.84)
         PCAmotor.MotorRun(PCAmotor.Motors.M4, -turnSpeed)
+        basic.pause(5)
     } else {
         PCAmotor.MotorRun(PCAmotor.Motors.M1, -speed * 0.84)
         PCAmotor.MotorRun(PCAmotor.Motors.M4, -speed)
+        basic.pause(5)
     }  
 })
