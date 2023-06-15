@@ -7,7 +7,7 @@ let directionC = false
 let directionR = false
 let directionL = false
 let speed = 150
-let turnSpeed = 100
+let turnSpeed = 110
 
 let m1 = PCAmotor.Motors.M1
 let m4 = PCAmotor.Motors.M4
@@ -66,22 +66,34 @@ basic.forever(function () {
         music.playTone(Note.C, music.beat(BeatFraction.Whole))
         PCAmotor.MotorRun(m1, -speed * 0.84)
         PCAmotor.MotorRun(m4, speed)
-        basic.pause(1120)
-        PCAmotor.MotorStopAll()
+        basic.pause(1200)
+        
 
     }
 
     if (l && r) {
-        if (directionC) {
+        if (directionR) {
+            //doprava
+            PCAmotor.MotorRun(m1, -speed * 0.84)
+            PCAmotor.MotorRun(m4, speed)
+            basic.pause(500)
             PCAmotor.MotorRun(m1, -speed * 0.84)
             PCAmotor.MotorRun(m4, -speed)
             basic.pause(200)
-            directionC = false
+            directionR = false
+            basic.showLeds(`
+        . . # . .
+        . # # # .
+        # . # . #
+        . . # . .
+        . . # . .
+        `)
+            directionC = true
         } else if (directionL){
             //doleva
             PCAmotor.MotorRun(m1, speed * 0.84)
             PCAmotor.MotorRun(m4, -speed)
-            basic.pause(500)
+            basic.pause(470)
             PCAmotor.MotorRun(m1, -speed * 0.84)
             PCAmotor.MotorRun(m4, -speed)
             basic.pause(200)
@@ -95,31 +107,19 @@ basic.forever(function () {
         `)
             directionC = true
         }
-    } else if (directionR) {
-        //doprava
-        PCAmotor.MotorRun(m1, -speed * 0.84)
-        PCAmotor.MotorRun(m4, speed)
-        basic.pause(500)
-        PCAmotor.MotorRun(m1, -speed * 0.84)
-        PCAmotor.MotorRun(m4, -speed)
-        basic.pause(200)
-        directionR = false
-        basic.showLeds(`
-        . . # . .
-        . # # # .
-        # . # . #
-        . . # . .
-        . . # . .
-        `)
-        directionC = true
-    }
+    } else if (directionC) {
+            PCAmotor.MotorRun(m1, -speed * 0.84)
+            PCAmotor.MotorRun(m4, -speed)
+            basic.pause(200)
+            directionC = false
+        }
     else if (r) {
-        PCAmotor.MotorRun(m1, -turnSpeed * 0.84)
-        PCAmotor.MotorRun(m4, speed)
+        PCAmotor.MotorRun(m1, -speed * 0.84)
+        PCAmotor.MotorRun(m4, turnSpeed)
         basic.pause(3)
     } else if (l) {
-        PCAmotor.MotorRun(m1, speed * 0.84)
-        PCAmotor.MotorRun(m4, -turnSpeed)
+        PCAmotor.MotorRun(m1, turnSpeed * 0.84)
+        PCAmotor.MotorRun(m4, -speed)
         basic.pause(36)
     } else {
         PCAmotor.MotorRun(m1, -speed * 0.84)
